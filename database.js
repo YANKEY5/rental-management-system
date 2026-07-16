@@ -1,13 +1,18 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
+const { parse } = require('pg-connection-string');
+
 const connectionString = process.env.DATABASE_URL || process.env.DATABASE_POSTGRES_URL;
-const pool = new Pool({
-  connectionString,
-  ssl: connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')
-    ? { rejectUnauthorized: false }
-    : false
-});
+const config = connectionString ? parse(connectionString) : {};
+
+if (connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')) {
+  config.ssl = { rejectUnauthorized: false };
+} else {
+  config.ssl = false;
+}
+
+const pool = new Pool(config);
 
 function convertSql(sql) {
   let index = 1;
