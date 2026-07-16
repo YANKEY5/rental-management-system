@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraRent - Professional Rental Management System</title>
+  
+  <!-- Fonts: Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="app.css">
+</head>
+<body class="light-theme">
+  <!-- Toast Notification Overlay -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Global App Loader -->
+  <div id="global-loader" class="global-loader hidden">
+    <div class="loader-spinner"></div>
+    <p>Processing request...</p>
+  </div>
+
+  <div id="app">
+    <!-- ==========================================
+         LOGIN VIEW
+         ========================================== -->
+    <div id="login-view" class="view login-view">
+      <div class="login-card">
+        <div class="login-logo">
+          <i class="fa-solid fa-hotel logo-icon"></i>
+          <h1>AURA<span>RENT</span></h1>
+          <p>Enterprise Rental Management System</p>
+        </div>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
+            <input type="text" id="login-username" placeholder="Enter username (e.g., admin)" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="login-password" placeholder="Enter password (e.g., admin123)" required autocomplete="current-password">
+              <button type="button" id="toggle-password-btn" class="toggle-password-btn">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+          <div class="auth-divider"><span>or</span></div>
+          <button type="button" id="google-login-btn" class="btn btn-secondary btn-block btn-google">
+            <i class="fa-brands fa-google" style="color: #4285F4; margin-right: 8px;"></i> Sign in with Google
+          </button>
+        </form>
+        <div class="login-footer">
+          <a href="#" id="forgot-password-link">Forgot Password?</a>
+          <span class="bullet">&bull;</span>
+          <a href="#" id="show-register-link">Create Account</a>
+        </div>
+        <div class="demo-accounts-info">
+          <h3>Quick Seed Logins (Password: admin123 / tenant123)</h3>
+          <div class="demo-tags">
+            <span class="demo-tag" onclick="quickFill('admin', 'admin123')">Super Admin (admin)</span>
+            <span class="demo-tag" onclick="quickFill('manager', 'manager123')">Manager (manager)</span>
+            <span class="demo-tag" onclick="quickFill('landlord', 'landlord123')">Landlord (landlord)</span>
+            <span class="demo-tag" onclick="quickFill('accountant', 'accountant123')">Accountant (accountant)</span>
+            <span class="demo-tag" onclick="quickFill('maintenance', 'maintenance123')">Maintenance (maintenance)</span>
+            <span class="demo-tag" onclick="quickFill('receptionist', 'receptionist123')">Reception (receptionist)</span>
+            <span class="demo-tag" onclick="quickFill('tenant1', 'tenant123')">Tenant (tenant1)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         REGISTRATION VIEW
+         ========================================== -->
+    <div id="register-view" class="view login-view hidden">
+      <div class="login-card">
+        <div class="login-logo">
+          <i class="fa-solid fa-hotel logo-icon"></i>
+          <h1>AURA<span>RENT</span></h1>
+          <p>Create Your AuraRent Account</p>
+        </div>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="reg-fullname"><i class="fa-solid fa-signature"></i> Full Name *</label>
+            <input type="text" id="reg-fullname" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="reg-username"><i class="fa-solid fa-user"></i> Username *</label>
+              <input type="text" id="reg-username" placeholder="Choose username" required>
+            </div>
+            <div class="form-group col-6">
+              <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address *</label>
+              <input type="email" id="reg-email" placeholder="Enter Gmail or email" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="reg-phone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+              <input type="text" id="reg-phone" placeholder="e.g. +15550100">
+            </div>
+            <div class="form-group col-6">
+              <label for="reg-role"><i class="fa-solid fa-user-tag"></i> Register As *</label>
+              <select id="reg-role" required>
+                <option value="Tenant">Tenant</option>
+                <option value="Landlord">Landlord</option>
+                <option value="Property Manager">Property Manager</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="reg-password"><i class="fa-solid fa-lock"></i> Password *</label>
+              <input type="password" id="reg-password" placeholder="Choose password" required minlength="6">
+            </div>
+            <div class="form-group col-6">
+              <label for="reg-confirm-password"><i class="fa-solid fa-circle-check"></i> Confirm *</label>
+              <input type="password" id="reg-confirm-password" placeholder="Confirm password" required minlength="6">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Register Account</button>
+        </form>
+        <div class="login-footer">
+          <span>Already have an account?</span>
+          <a href="#" id="show-login-link">Sign In</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MAIN APPLICATION VIEW
+         ========================================== -->
+    <div id="main-view" class="view main-layout hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fa-solid fa-hotel logo-icon"></i>
+          <h2>AURA<span>RENT</span></h2>
+        </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li data-target="dashboard" class="active"><a href="#"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li data-target="properties"><a href="#"><i class="fa-solid fa-building"></i> Properties</a></li>
+            <li data-target="units"><a href="#"><i class="fa-solid fa-door-open"></i> Units</a></li>
+            <li data-target="tenants"><a href="#"><i class="fa-solid fa-users"></i> Tenants</a></li>
+            <li data-target="leases"><a href="#"><i class="fa-solid fa-file-contract"></i> Leases</a></li>
+            <li data-target="invoices"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices</a></li>
+            <li data-target="payments"><a href="#"><i class="fa-solid fa-receipt"></i> Payments</a></li>
+            <li data-target="maintenance"><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance</a></li>
+            <li data-target="utilities"><a href="#"><i class="fa-solid fa-faucet-drip"></i> Utilities</a></li>
+            <li data-target="expenses"><a href="#"><i class="fa-solid fa-wallet"></i> Expenses</a></li>
+            <li data-target="visitors"><a href="#"><i class="fa-solid fa-id-badge"></i> Visitors</a></li>
+            <li data-target="audit-logs" class="role-only super-admin-only"><a href="#"><i class="fa-solid fa-history"></i> Audit Logs</a></li>
+            <li data-target="reports"><a href="#"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+            <li data-target="payment-settings" class="role-only landlord-only manager-only"><a href="#"><i class="fa-solid fa-credit-card"></i> Payment Settings</a></li>
+          </ul>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="user-profile-widget">
+            <div class="user-avatar" id="sidebar-avatar">A</div>
+            <div class="user-details">
+              <h4 id="sidebar-user-name">User Name</h4>
+              <p id="sidebar-user-role">Role</p>
+            </div>
+          </div>
+          <div class="sidebar-actions">
+            <button id="theme-toggle" title="Toggle Theme" class="btn-icon">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+            <button id="logout-btn" title="Sign Out" class="btn-icon logout-icon">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTAINER -->
+      <div class="content-wrapper">
+        <!-- HEADER -->
+        <header class="main-header">
+          <div class="header-left">
+            <button id="sidebar-toggle" class="sidebar-toggle"><i class="fa-solid fa-bars"></i></button>
+            <h1 id="view-title">Dashboard</h1>
+          </div>
+          <div class="header-right">
+            <!-- Global Search -->
+            <div class="global-search-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="global-search-input" placeholder="Global search properties, units, tenants...">
+              <div id="global-search-results" class="search-dropdown hidden"></div>
+            </div>
+
+            <!-- In-App Notifications -->
+            <div class="notification-bell-wrapper">
+              <button id="notifications-bell" class="notifications-bell">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notification-badge hidden" id="notification-badge-count">0</span>
+              </button>
+              <div id="notifications-dropdown" class="notifications-dropdown hidden">
+                <div class="notifications-header">
+                  <h3>System Notifications</h3>
+                  <button id="clear-notifications" class="btn-text">Clear All</button>
+                </div>
+                <div class="notifications-list" id="notifications-list">
+                  <div class="empty-state">No notifications.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role Badge -->
+            <span class="user-role-badge" id="header-role-badge">Super Admin</span>
+          </div>
+        </header>
+
+        <!-- Dynamic Main Content Container -->
+        <main class="main-content" id="main-content"></main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODALS & DIALOGS
+       ========================================== -->
+
+  <!-- Modal overlay base -->
+  <div class="modal-overlay hidden" id="modal-container">
+    <!-- Property Modal -->
+    <div class="modal-card hidden" id="property-modal">
+      <div class="modal-header">
+        <h2 id="property-modal-title">Add Property</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="property-form">
+        <input type="hidden" id="prop-id">
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-name">Property Name *</label>
+            <input type="text" id="prop-name" required placeholder="e.g. Grand Horizon Apartments">
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-code">Property Code *</label>
+            <input type="text" id="prop-code" required placeholder="e.g. GHA-01">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-type">Property Type *</label>
+            <select id="prop-type" required>
+              <option value="Apartment">Apartment</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Villa">Villa</option>
+              <option value="Townhouse">Townhouse</option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-owner">Owner ID *</label>
+            <input type="number" id="prop-owner" required value="3" placeholder="Owner User ID">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="prop-address">Address *</label>
+          <input type="text" id="prop-address" required placeholder="Street address">
+        </div>
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label for="prop-city">City *</label>
+            <input type="text" id="prop-city" required placeholder="City">
+          </div>
+          <div class="form-group col-4">
+            <label for="prop-state">State *</label>
+            <input type="text" id="prop-state" required placeholder="State">
+          </div>
+          <div class="form-group col-4">
+            <label for="prop-country">Country *</label>
+            <input type="text" id="prop-country" required placeholder="Country">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-floors">Number of Floors *</label>
+            <input type="number" id="prop-floors" required min="1" value="1">
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-units">Total Units *</label>
+            <input type="number" id="prop-units" required min="1" value="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-lat">GPS Latitude</label>
+            <input type="number" step="any" id="prop-lat" placeholder="e.g. 25.7617">
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-lng">GPS Longitude</label>
+            <input type="number" step="any" id="prop-lng" placeholder="e.g. -80.1918">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="prop-amenities">Amenities (Comma separated)</label>
+          <input type="text" id="prop-amenities" placeholder="e.g. Swimming Pool, Gym, Parking, WiFi">
+        </div>
+        <div class="form-group">
+          <label for="prop-description">Description</label>
+          <textarea id="prop-description" placeholder="Write description..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-images-upload">Upload Pictures</label>
+            <input type="file" id="prop-images-upload" accept="image/*" multiple>
+            <div id="prop-images-preview" class="media-preview-container" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"></div>
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-videos-upload">Upload Videos</label>
+            <input type="file" id="prop-videos-upload" accept="video/*" multiple>
+            <div id="prop-videos-preview" class="media-preview-container" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"></div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 20px;">
+          <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px; font-size: 16px; font-family: 'Outfit', sans-serif;">
+            <i class="fa-solid fa-credit-card" style="margin-right: 8px; color: var(--primary);"></i>Payment Settings (Property Specific)
+          </h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">
+            These credentials override default landlord payment settings. Leave blank to use landlord account defaults.
+          </p>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-bank-name">Bank Name</label>
+            <input type="text" id="prop-bank-name" placeholder="e.g. Chase Bank">
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-bank-account">Bank Account Number</label>
+            <input type="text" id="prop-bank-account" placeholder="e.g. 123456789">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-mobile-money">Mobile Money Number</label>
+            <input type="text" id="prop-mobile-money" placeholder="e.g. +15550900">
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-credit-card">Credit Card Gateway Details</label>
+            <input type="text" id="prop-credit-card" placeholder="e.g. Stripe Account Descriptor">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-12">
+            <label for="prop-gateway-type">Gateway Provider</label>
+            <select id="prop-gateway-type" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; outline: none;">
+              <option value="stripe">Stripe</option>
+              <option value="paystack">Paystack</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="prop-stripe-secret">Secret Key</label>
+            <input type="password" id="prop-stripe-secret" placeholder="sk_test_...">
+          </div>
+          <div class="form-group col-6">
+            <label for="prop-stripe-publishable">Publishable Key</label>
+            <input type="text" id="prop-stripe-publishable" placeholder="pk_test_...">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Property</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Unit Modal -->
+    <div class="modal-card hidden" id="unit-modal">
+      <div class="modal-header">
+        <h2 id="unit-modal-title">Add Unit</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="unit-form">
+        <input type="hidden" id="unit-id">
+        <div class="form-group">
+          <label for="unit-property-id">Property *</label>
+          <select id="unit-property-id" required></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="unit-number">Unit Number/Name *</label>
+            <input type="text" id="unit-number" required placeholder="e.g. 101 or Suite A">
+          </div>
+          <div class="form-group col-6">
+            <label for="unit-floor">Floor *</label>
+            <input type="number" id="unit-floor" required min="0" value="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="unit-bedrooms">Bedrooms *</label>
+            <input type="number" id="unit-bedrooms" required min="0" value="1">
+          </div>
+          <div class="form-group col-6">
+            <label for="unit-bathrooms">Bathrooms *</label>
+            <input type="number" id="unit-bathrooms" step="0.5" required min="0" value="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label for="unit-rent">Monthly Rent ($) *</label>
+            <input type="number" id="unit-rent" required min="0" placeholder="1500">
+          </div>
+          <div class="form-group col-4">
+            <label for="unit-deposit">Security Deposit ($) *</label>
+            <input type="number" id="unit-deposit" required min="0" placeholder="1500">
+          </div>
+          <div class="form-group col-4">
+            <label for="unit-service">Service Charge ($)</label>
+            <input type="number" id="unit-service" min="0" value="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="unit-status">Status *</label>
+          <select id="unit-status" required>
+            <option value="Vacant">Vacant</option>
+            <option value="Occupied">Occupied</option>
+            <option value="Reserved">Reserved</option>
+            <option value="Under Maintenance">Under Maintenance</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Unit</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tenant Modal -->
+    <div class="modal-card hidden" id="tenant-modal">
+      <div class="modal-header">
+        <h2 id="tenant-modal-title">Register Tenant</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="tenant-form">
+        <div class="demo-alert">
+          <i class="fa-solid fa-circle-info"></i> Registering a tenant automatically provisions a portal login user account.
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="tenant-username">Username *</label>
+            <input type="text" id="tenant-username" required placeholder="e.g. peterparker">
+          </div>
+          <div class="form-group col-6">
+            <label for="tenant-password">Account Password *</label>
+            <input type="password" id="tenant-password" required placeholder="Default credentials">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="tenant-fullname">Full Name *</label>
+            <input type="text" id="tenant-fullname" required placeholder="Peter Parker">
+          </div>
+          <div class="form-group col-6">
+            <label for="tenant-email">Email Address *</label>
+            <input type="email" id="tenant-email" required placeholder="peter@domain.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="tenant-phone">Phone Number</label>
+            <input type="text" id="tenant-phone" placeholder="+15550000">
+          </div>
+          <div class="form-group col-6">
+            <label for="tenant-dob">Date of Birth</label>
+            <input type="date" id="tenant-dob">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="tenant-nid">National ID / SSN</label>
+            <input type="text" id="tenant-nid" placeholder="NID-XXXXXX">
+          </div>
+          <div class="form-group col-6">
+            <label for="tenant-passport">Passport Number</label>
+            <input type="text" id="tenant-passport" placeholder="PPT-XXXXXX">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="tenant-occupation">Occupation</label>
+            <input type="text" id="tenant-occupation" placeholder="e.g. Software Engineer">
+          </div>
+          <div class="form-group col-6">
+            <label for="tenant-employer">Employer</label>
+            <input type="text" id="tenant-employer" placeholder="Company Name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Emergency Contact</label>
+          <div class="nested-fields">
+            <input type="text" id="tenant-emergency-name" placeholder="Name">
+            <input type="text" id="tenant-emergency-phone" placeholder="Phone">
+            <input type="text" id="tenant-emergency-relation" placeholder="Relationship">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Guarantor Details</label>
+          <div class="nested-fields">
+            <input type="text" id="tenant-guarantor-name" placeholder="Name">
+            <input type="text" id="tenant-guarantor-phone" placeholder="Phone">
+            <input type="number" id="tenant-guarantor-income" placeholder="Annual Income ($)">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Register Tenant</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lease Modal -->
+    <div class="modal-card hidden" id="lease-modal">
+      <div class="modal-header">
+        <h2>Create Lease Agreement</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="lease-form">
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="lease-unit-id">Select Unit *</label>
+            <select id="lease-unit-id" required></select>
+          </div>
+          <div class="form-group col-6">
+            <label for="lease-tenant-id">Select Tenant *</label>
+            <select id="lease-tenant-id" required></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="lease-start">Lease Start Date *</label>
+            <input type="date" id="lease-start" required>
+          </div>
+          <div class="form-group col-6">
+            <label for="lease-end">Lease End Date *</label>
+            <input type="date" id="lease-end" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="lease-rent">Rent Amount ($) *</label>
+            <input type="number" id="lease-rent" required placeholder="Inherited from unit settings">
+          </div>
+          <div class="form-group col-6">
+            <label for="lease-deposit">Deposit Amount ($) *</label>
+            <input type="number" id="lease-deposit" required placeholder="Inherited from unit settings">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="lease-terms">Agreement Terms & Conditions</label>
+          <textarea id="lease-terms" rows="4" placeholder="Standard lease terms. Include policies, maintenance allocations, rules..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Agreement</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Digital Signature Modal -->
+    <div class="modal-card hidden" id="signature-modal">
+      <div class="modal-header">
+        <h2>Digital Lease Sign-off</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="signature-form">
+        <input type="hidden" id="sign-lease-id">
+        <p class="signature-instruction">Use your mouse, trackpad, or touch screen to draw your official digital signature below.</p>
+        <div class="signature-canvas-wrapper">
+          <canvas id="signature-pad" width="550" height="200"></canvas>
+        </div>
+        <div class="signature-controls">
+          <button type="button" id="clear-sig-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eraser"></i> Clear</button>
+          <span class="warning-text"><i class="fa-solid fa-circle-exclamation"></i> Drawing is legally binding.</span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Apply Signature & Activate Lease</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Record Payment Modal -->
+    <div class="modal-card hidden" id="payment-modal">
+      <div class="modal-header">
+        <h2>Record Rent Payment</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="payment-form">
+        <input type="hidden" id="pay-invoice-id">
+        <div class="form-group">
+          <label>Invoice Billing Details</label>
+          <div class="invoice-summary-box" id="pay-invoice-details">
+            <span id="pay-details-number">INV-XXXX</span>
+            <span id="pay-details-amount">$0.00 Due</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="pay-amount">Payment Amount ($) *</label>
+          <input type="number" step="0.01" id="pay-amount" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="pay-method">Payment Method *</label>
+          <select id="pay-method" required>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Online Payment Gateway">Online Payment Gateway</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Mobile Money">Mobile Money</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        <!-- Dynamic Landlord Payment Info Container -->
+        <div id="landlord-payment-info" class="landlord-payment-info hidden" style="margin-top: 15px; margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: 8px;">
+          <h4 style="margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--primary);"><i class="fa-solid fa-circle-info"></i> Landlord Payment Details</h4>
+          <p id="landlord-payment-details-text" style="font-size: 13px; line-height: 1.5; color: var(--text-main);"></p>
+        </div>
+        <div class="form-group">
+          <label for="pay-ref">Transaction Reference / Memo</label>
+          <input type="text" id="pay-ref" placeholder="e.g. wire reference, check number">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Process Receipt</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Apply for Unit Modal -->
+    <div class="modal-card hidden" id="apply-modal">
+      <div class="modal-header">
+        <h2>Apply for Rental Unit</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="apply-form">
+        <input type="hidden" id="apply-unit-id">
+        <div class="form-group">
+          <label>Unit Details</label>
+          <div class="invoice-summary-box" style="padding:15px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span id="apply-details-unit" style="font-weight:600;">Unit XXX</span>
+            <span id="apply-details-pricing" style="font-weight:600; color:var(--primary); font-size:14px;">$0.00 / mo</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="apply-start-date">Desired Move-in Date *</label>
+          <input type="date" id="apply-start-date" required>
+        </div>
+        <div class="form-group">
+          <label for="apply-end-date">Desired Lease End Date *</label>
+          <input type="date" id="apply-end-date" required>
+        </div>
+        <div class="form-group">
+          <label for="apply-terms">Additional Requests or Terms</label>
+          <textarea id="apply-terms" placeholder="e.g. parking request, pet description" style="width:100%; min-height:80px; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:rgba(0,0,0,0.1); color:#fff; outline:none; resize:vertical; font-family:inherit;"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Application</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Utility Reading Modal -->
+    <div class="modal-card hidden" id="utility-modal">
+      <div class="modal-header">
+        <h2>Log Utility Reading</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="utility-form">
+        <div class="form-group">
+          <label for="util-unit-id">Target Unit *</label>
+          <select id="util-unit-id" required></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="util-type">Utility Type *</label>
+            <select id="util-type" required>
+              <option value="Electricity">Electricity</option>
+              <option value="Water">Water</option>
+              <option value="Gas">Gas</option>
+              <option value="Internet">Internet</option>
+              <option value="Waste">Waste</option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label for="util-date">Reading Date *</label>
+            <input type="date" id="util-date" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label for="util-prev">Previous Reading *</label>
+            <input type="number" step="any" id="util-prev" required value="0">
+          </div>
+          <div class="form-group col-4">
+            <label for="util-curr">Current Reading *</label>
+            <input type="number" step="any" id="util-curr" required value="0">
+          </div>
+          <div class="form-group col-4">
+            <label for="util-rate">Unit Rate ($) *</label>
+            <input type="number" step="any" id="util-rate" required placeholder="0.20">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Record Utility</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Expense Modal -->
+    <div class="modal-card hidden" id="expense-modal">
+      <div class="modal-header">
+        <h2>Record Corporate Expense</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="expense-form" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="exp-property-id">Target Property *</label>
+          <select id="exp-property-id" required></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="exp-category">Expense Category *</label>
+            <select id="exp-category" required>
+              <option value="Repairs">Repairs</option>
+              <option value="Salaries">Salaries</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Water">Water</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Taxes">Taxes</option>
+              <option value="Cleaning">Cleaning</option>
+              <option value="Fuel">Fuel</option>
+              <option value="Internet">Internet</option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label for="exp-date">Expense Date *</label>
+            <input type="date" id="exp-date" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="exp-amount">Amount Expense ($) *</label>
+          <input type="number" step="0.01" id="exp-amount" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="exp-description">Details / Invoice Memo *</label>
+          <input type="text" id="exp-description" required placeholder="e.g. Boiler repair lobby area">
+        </div>
+        <div class="form-group">
+          <label for="exp-receipt">Upload Receipt PDF/Image</label>
+          <input type="file" id="exp-receipt" accept="image/*,application/pdf">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Expense</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Visitor Modal -->
+    <div class="modal-card hidden" id="visitor-modal">
+      <div class="modal-header">
+        <h2>Register Check-In</h2>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <form id="visitor-form">
+        <div class="form-group">
+          <label for="vis-name">Visitor's Full Name *</label>
+          <input type="text" id="vis-name" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label for="vis-phone">Phone Number *</label>
+          <input type="text" id="vis-phone" required placeholder="+15550000">
+        </div>
+        <div class="form-group">
+          <label for="vis-host-id">Resident Host Tenant *</label>
+          <select id="vis-host-id" required></select>
+        </div>
+        <div class="form-group">
+          <label for="vis-purpose">Purpose of Visit *</label>
+          <input type="text" id="vis-purpose" required placeholder="e.g. food delivery, study, maintenance">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Register Check-In</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Print Receipt/Invoice Viewer Modal -->
+    <div class="modal-card modal-large hidden" id="print-view-modal">
+      <div class="modal-header no-print">
+        <h2>Document Preview</h2>
+        <div>
+          <button id="modal-print-btn" class="btn btn-primary btn-sm"><i class="fa-solid fa-print"></i> Print PDF</button>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+      </div>
+      <div class="print-container" id="print-area">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Media Preview Lightbox Modal -->
+    <div class="modal-card hidden" id="media-preview-modal" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2>Media Preview</h2>
+        <button class="close-modal-btn" onclick="closeMediaPreview()">&times;</button>
+      </div>
+      <div class="modal-body" style="display:flex; justify-content:center; align-items:center; min-height:300px; background:#000; border-radius:4px; padding:10px; overflow:hidden;">
+        <div id="media-preview-content" style="width:100%; display:flex; justify-content:center;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet Map Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Chart.js for Dash Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Core JavaScript SPA application -->
+  <script src="app.js"></script>
+</body>
+</html>

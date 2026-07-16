@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in - Google Accounts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --google-blue: #1a73e8;
+      --google-blue-hover: #1557b0;
+      --text-color: #202124;
+      --border-color: #dadce0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #ffffff;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .oauth-box {
+      width: 100%;
+      max-width: 450px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .google-logo {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .google-logo span:nth-child(1) { color: #4285F4; }
+    .google-logo span:nth-child(2) { color: #EA4335; }
+    .google-logo span:nth-child(3) { color: #FBBC05; }
+    .google-logo span:nth-child(4) { color: #4285F4; }
+    .google-logo span:nth-child(5) { color: #34A853; }
+    .google-logo span:nth-child(6) { color: #EA4335; }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      font-size: 16px;
+      color: #5f6368;
+      margin-bottom: 24px;
+    }
+    .app-request {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      background-color: #f1f3f4;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      color: #3c4043;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: #5f6368;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus {
+      border-color: var(--google-blue);
+      box-shadow: 0 0 0 1px var(--google-blue);
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 35px;
+    }
+    .btn-create {
+      background: none;
+      border: none;
+      color: var(--google-blue);
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-create:hover {
+      color: var(--google-blue-hover);
+    }
+    .btn-next {
+      background-color: var(--google-blue);
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .btn-next:hover {
+      background-color: var(--google-blue-hover);
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #757575;
+    }
+    .footer-links span {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .footer-links span:hover {
+      color: var(--text-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="oauth-box">
+    <div class="google-logo">
+      <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+    </div>
+    <h1>Sign in</h1>
+    <p class="subtitle">to continue to AuraRent</p>
+    <div class="app-request">
+      <i class="fa-solid fa-hotel"></i> AuraRent System
+    </div>
+
+    <form id="google-oauth-form">
+      <div class="form-group">
+        <label for="gmail">Gmail Address</label>
+        <input type="email" id="gmail" placeholder="name@gmail.com" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="John Doe" required>
+      </div>
+      
+      <div class="actions">
+        <button type="button" class="btn-create" onclick="window.close()">Cancel</button>
+        <button type="submit" class="btn-next">Next</button>
+      </div>
+    </form>
+
+    <div class="footer">
+      <div>English (United States)</div>
+      <div class="footer-links">
+        <span>Help</span>
+        <span>Privacy</span>
+        <span>Terms</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('google-oauth-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('gmail').value;
+      const name = document.getElementById('name').value;
+      
+      if (window.opener) {
+        // Send email and name back to index.html/app.js
+        window.opener.postMessage({
+          source: 'google-oauth-complete',
+          email: email,
+          name: name
+        }, '*');
+      }
+      window.close();
+    });
+  </script>
+</body>
+</html>
