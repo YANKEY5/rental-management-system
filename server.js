@@ -93,6 +93,24 @@ function requireRole(allowedRoles) {
   };
 }
 
+app.get('/api/test-db', (req, res) => {
+  db.all('SELECT 1 + 1 AS result', [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+        stack: err.stack,
+        envKeys: Object.keys(process.env).filter(k => k.includes('DATABASE') || k.includes('POSTGRES'))
+      });
+    }
+    res.json({
+      success: true,
+      result: rows,
+      envKeys: Object.keys(process.env).filter(k => k.includes('DATABASE') || k.includes('POSTGRES'))
+    });
+  });
+});
+
 // ==========================================
 // API ROUTES: AUTHENTICATION
 // ==========================================
@@ -104,7 +122,10 @@ app.post('/api/auth/login', rateLimiter, (req, res) => {
   }
 
   db.get('SELECT * FROM users WHERE username = ?', [username.toLowerCase().trim()], (err, user) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
+    if (err) {
+      console.error('Login DB Error:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
     if (!user) {
       // Record failed attempt
       loginAttempts[req.ip].push(Date.now());
