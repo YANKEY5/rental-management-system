@@ -27,44 +27,14 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Ensure upload folders exist
-const uploadDirs = [
-  path.join(__dirname, 'public', 'uploads'),
-  path.join(__dirname, 'public', 'uploads', 'signatures'),
-  path.join(__dirname, 'public', 'uploads', 'documents'),
-  path.join(__dirname, 'public', 'uploads', 'maintenance'),
-  path.join(__dirname, 'public', 'uploads', 'receipts'),
-  path.join(__dirname, 'public', 'uploads', 'properties')
-];
-uploadDirs.forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
+// Helper to convert uploaded files to Base64 data URIs
+const fileToBase64 = (file) => {
+  if (!file) return null;
+  return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+};
 
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let folder = path.join(__dirname, 'public', 'uploads');
-    if (file.fieldname === 'signature') {
-      folder = path.join(__dirname, 'public', 'uploads', 'signatures');
-    } else if (file.fieldname === 'document') {
-      folder = path.join(__dirname, 'public', 'uploads', 'documents');
-    } else if (file.fieldname === 'maintenance') {
-      folder = path.join(__dirname, 'public', 'uploads', 'maintenance');
-    } else if (file.fieldname === 'receipt') {
-      folder = path.join(__dirname, 'public', 'uploads', 'receipts');
-    } else if (file.fieldname === 'file') {
-      folder = path.join(__dirname, 'public', 'uploads', 'properties');
-    }
-    cb(null, folder);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${Date.now()}${ext}`);
-  }
-});
-const upload = multer({ storage });
+// Configure Multer for file uploads in memory
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Serves the public/ directory as static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -747,7 +717,7 @@ app.post('/api/upload-media', authenticateToken, upload.single('file'), (req, re
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  const filepath = `uploads/properties/${req.file.filename}`;
+  const filepath = fileToBase64(req.file);
   res.json({ filepath });
 });
 
@@ -1124,41 +1094,32 @@ app.post('/api/leases/:id/sign', authenticateToken, (req, res) => {
       return res.status(403).json({ error: 'Unauthorized: You can only sign your own lease.' });
     }
 
-    // Save signature file
-    const base64Data = signature_data.replace(/^data:image\/png;base64,/, "");
-    const filename = `signature-lease-${id}-${Date.now()}.png`;
-    const filepath = path.join(__dirname, 'public', 'uploads', 'signatures', filename);
+    db.serialize(() => {
+      // Update lease to Active and store signature path
+      db.run(
+        "UPDATE leases SET status = 'Active', signature_path = ? WHERE id = ?",
+        [signature_data, id]
+      );
+      // Update unit to Occupied
+      db.run("UPDATE units SET status = 'Occupied' WHERE id = ?", [lease.unit_id]);
+      // Update tenant's profile digital signature
+      db.run("UPDATE tenants SET digital_signature = ? WHERE id = ?", [signature_data, lease.tenant_id]);
 
-    fs.writeFile(filepath, base64Data, 'base64', (err) => {
-      if (err) return res.status(500).json({ error: 'Failed to save digital signature file.' });
+      // Generate immediate first rent invoice
+      const invNum = `INV-LSE-${id}-${Date.now().toString().slice(-4)}`;
+      const billPeriod = new Date().toISOString().slice(0, 7);
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + 7); // Due in 7 days
+      const dueDateStr = dueDate.toISOString().split('T')[0];
+      const total = lease.rent_amount + lease.deposit_amount;
 
-      db.serialize(() => {
-        // Update lease to Active and store signature path
-        db.run(
-          "UPDATE leases SET status = 'Active', signature_path = ? WHERE id = ?",
-          [`uploads/signatures/${filename}`, id]
-        );
-        // Update unit to Occupied
-        db.run("UPDATE units SET status = 'Occupied' WHERE id = ?", [lease.unit_id]);
-        // Update tenant's profile digital signature
-        db.run("UPDATE tenants SET digital_signature = ? WHERE id = ?", [signature_data, lease.tenant_id]);
+      db.run(`
+        INSERT INTO invoices (lease_id, invoice_number, billing_period, rent_due, penalties, total_due, paid_amount, status, due_date)
+        VALUES (?, ?, ?, ?, 0.0, ?, 0.0, 'Unpaid', ?)
+      `, [id, invNum, billPeriod, lease.rent_amount, total, dueDateStr]);
 
-        // Generate immediate first rent invoice
-        const invNum = `INV-LSE-${id}-${Date.now().toString().slice(-4)}`;
-        const billPeriod = new Date().toISOString().slice(0, 7);
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 7); // Due in 7 days
-        const dueDateStr = dueDate.toISOString().split('T')[0];
-        const total = lease.rent_amount + lease.deposit_amount;
-
-        db.run(`
-          INSERT INTO invoices (lease_id, invoice_number, billing_period, rent_due, penalties, total_due, paid_amount, status, due_date)
-          VALUES (?, ?, ?, ?, 0.0, ?, 0.0, 'Unpaid', ?)
-        `, [id, invNum, billPeriod, lease.rent_amount, total, dueDateStr]);
-
-        logAudit(req.user.id, 'SIGN_LEASE', `Lease signed and activated (ID: ${id})`, req);
-        res.json({ message: 'Lease agreement signed and activated successfully. First invoice generated.' });
-      });
+      logAudit(req.user.id, 'SIGN_LEASE', `Lease signed and activated (ID: ${id})`, req);
+      res.json({ message: 'Lease agreement signed and activated successfully. First invoice generated.' });
     });
   });
 });
@@ -1743,7 +1704,7 @@ app.post('/api/maintenance', authenticateToken, upload.single('image_before'), (
     if (err) return res.status(500).json({ error: 'Database error' });
     if (!lease) return res.status(400).json({ error: 'You must have an active lease to submit maintenance tickets.' });
 
-    const filepath = req.file ? `uploads/maintenance/${req.file.filename}` : null;
+    const filepath = fileToBase64(req.file);
 
     db.run(`
       INSERT INTO maintenance_requests (unit_id, tenant_id, category, description, priority, status, image_before)
@@ -1789,7 +1750,7 @@ app.put('/api/maintenance/:id', authenticateToken, upload.single('image_after'),
 
     if (req.file) {
       query += ', image_after = ?';
-      params.push(`uploads/maintenance/${req.file.filename}`);
+      params.push(fileToBase64(req.file));
     }
 
     if (status === 'Completed') {
@@ -1830,7 +1791,7 @@ app.post('/api/expenses', authenticateToken, requireRole(['Super Admin', 'Proper
     return res.status(400).json({ error: 'Required fields: property_id, category, amount, description, expense_date' });
   }
 
-  const filepath = req.file ? `uploads/receipts/${req.file.filename}` : null;
+  const filepath = fileToBase64(req.file);
 
   db.run(`
     INSERT INTO expenses (property_id, category, amount, description, expense_date, recorded_by, receipt_path)
@@ -2216,14 +2177,20 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Initialize database schemas and start Express
+// Initialize database
 initDatabase()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Rental Management System server is active at: http://localhost:${PORT}`);
-    });
+    console.log('Database initialized successfully.');
   })
   .catch((err) => {
-    console.error('CRITICAL: Database initialization failed:', err);
-    process.exit(1);
+    console.error('Database initialization failed:', err);
   });
+
+// Start listening if not running in a serverless environment (like Vercel)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Rental Management System server is active at: http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
