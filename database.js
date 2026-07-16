@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL || process.env.DATABASE_POSTGRES_URL;
 const pool = new Pool({
   connectionString,
   ssl: connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')
