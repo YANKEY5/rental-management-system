@@ -17,6 +17,9 @@
     "pg": "^8.11.3",
     "stripe": "^22.3.0"
   },
+  "devDependencies": {
+    "sqlite3": "^5.1.7"
+  },
   "engines": {
     "node": ">=18.0.0"
   },

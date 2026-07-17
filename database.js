@@ -1,10 +1,16 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
+const path = require('path');
 
 const connectionString = process.env.DATABASE_URL || process.env.DATABASE_POSTGRES_URL;
-let config = {};
+
+let db;
+let pool;
+let isPostgres = false;
 
 if (connectionString) {
+  isPostgres = true;
+  let config = {};
   try {
     const dbUrl = new URL(connectionString);
     config = {
@@ -17,15 +23,47 @@ if (connectionString) {
   } catch (e) {
     config = { connectionString };
   }
-}
 
-if (connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')) {
-  config.ssl = { rejectUnauthorized: false };
+  if (connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')) {
+    config.ssl = { rejectUnauthorized: false };
+  } else {
+    config.ssl = false;
+  }
+
+  pool = new Pool(config);
 } else {
-  config.ssl = false;
-}
+  // Fallback to SQLite locally, using variable key to prevent Vercel static tracing
+  const sqliteModuleName = 'sqlite3';
+  const sqlite3 = require(sqliteModuleName).verbose();
+  const sqliteDb = new sqlite3.Database(path.join(__dirname, 'rental_system.db'));
 
-const pool = new Pool(config);
+  db = {
+    get(sql, params, callback) {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      sqliteDb.get(sql, params, callback);
+    },
+    all(sql, params, callback) {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      sqliteDb.all(sql, params, callback);
+    },
+    run(sql, params, callback) {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      sqliteDb.run(sql, params, callback);
+    },
+    serialize(callback) {
+      sqliteDb.serialize(callback);
+    }
+  };
+}
 
 function convertSql(sql) {
   let index = 1;
@@ -37,73 +75,78 @@ function convertSql(sql) {
   return pgSql;
 }
 
-const db = {
-  get(sql, params, callback) {
-    if (typeof params === 'function') {
-      callback = params;
-      params = [];
-    }
-    const pgSql = convertSql(sql);
-    pool.query(pgSql, params, (err, res) => {
-      if (err) {
-        if (callback) callback(err);
-        return;
+if (isPostgres) {
+  db = {
+    get(sql, params, callback) {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
       }
-      if (callback) callback(null, res.rows[0] || null);
-    });
-  },
+      const pgSql = convertSql(sql);
+      pool.query(pgSql, params, (err, res) => {
+        if (err) {
+          if (callback) callback(err);
+          return;
+        }
+        if (callback) callback(null, res.rows[0] || null);
+      });
+    },
 
-  all(sql, params, callback) {
-    if (typeof params === 'function') {
-      callback = params;
-      params = [];
-    }
-    const pgSql = convertSql(sql);
-    pool.query(pgSql, params, (err, res) => {
-      if (err) {
-        if (callback) callback(err);
-        return;
+    all(sql, params, callback) {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
       }
-      if (callback) callback(null, res.rows);
-    });
-  },
+      const pgSql = convertSql(sql);
+      pool.query(pgSql, params, (err, res) => {
+        if (err) {
+          if (callback) callback(err);
+          return;
+        }
+        if (callback) callback(null, res.rows);
+      });
+    },
 
-  run(sql, params, callback) {
-    if (typeof params === 'function') {
-      callback = params;
-      params = [];
-    }
-    let pgSql = convertSql(sql);
-    
-    // Check if INSERT and doesn't contain RETURNING to support SQLite's this.lastID
-    const isInsert = /^\s*insert\s+/i.test(pgSql);
-    const hasReturning = /returning\s+/i.test(pgSql);
-    if (isInsert && !hasReturning) {
-      pgSql += ' RETURNING id';
-    }
-
-    pool.query(pgSql, params, (err, res) => {
-      if (err) {
-        if (callback) callback(err);
-        return;
+    run(sql, params, callback) {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
       }
-      if (callback) {
-        const lastID = (isInsert && res.rows[0]) ? res.rows[0].id : null;
-        const context = {
-          lastID: lastID,
-          changes: res.rowCount
-        };
-        callback.call(context, null);
+      let pgSql = convertSql(sql);
+      
+      const isInsert = /^\s*insert\s+/i.test(pgSql);
+      const hasReturning = /returning\s+/i.test(pgSql);
+      if (isInsert && !hasReturning) {
+        pgSql += ' RETURNING id';
       }
-    });
-  },
 
-  serialize(callback) {
-    callback();
-  }
-};
+      pool.query(pgSql, params, (err, res) => {
+        if (err) {
+          if (callback) callback(err);
+          return;
+        }
+        if (callback) {
+          const lastID = (isInsert && res.rows[0]) ? res.rows[0].id : null;
+          const context = {
+            lastID: lastID,
+            changes: res.rowCount
+          };
+          callback.call(context, null);
+        }
+      });
+    },
+
+    serialize(callback) {
+      callback();
+    }
+  };
+}
 
 async function initDatabase() {
+  if (!isPostgres) {
+    console.log("Local SQLite database verified (init skipped).");
+    return;
+  }
   const client = await pool.connect();
   try {
     // 0. Create strftime overloaded functions to support existing queries
