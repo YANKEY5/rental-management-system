@@ -597,7 +597,7 @@ async function seedDatabase(client) {
   const auditData = [
     [1, 'DATABASE_SEED', 'Successfully seeded Rental Management System with initial data structures and roles.', '127.0.0.1'],
     [3, 'CREATE_LEASE', 'Landlord Bruce Wayne signed a 2-year lease with Tenant Tony Stark for Unit 201.', '127.0.0.1'],
-    [4, 'RECORD_EXPENSE', 'Accountant Clark Kent recorded common area power grid bill expense ($450).', '127.0.0.1']
+    [4, 'RECORD_EXPENSE', 'Accountant Clark Kent recorded common area power grid bill expense (GH₵450).', '127.0.0.1']
   ];
 
   for (const a of auditData) {

@@ -372,6 +372,17 @@ body.dark-theme .glass-panel {
   color: var(--color-primary);
   margin-bottom: 10px;
 }
+.logo-icon-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+.sidebar-header .logo-icon-img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 0;
+}
 .login-logo h1 {
   font-size: 28px;
   letter-spacing: 1px;

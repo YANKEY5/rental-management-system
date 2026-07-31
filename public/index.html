@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AuraRent - Professional Rental Management System</title>
-  
+
   <!-- Fonts: Google Fonts Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <!-- Leaflet Map CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="app.css">
 </head>
+
 <body class="light-theme">
   <!-- Toast Notification Overlay -->
   <div id="toast-container" class="toast-container"></div>
@@ -36,19 +41,21 @@
     <div id="login-view" class="view login-view">
       <div class="login-card">
         <div class="login-logo">
-          <i class="fa-solid fa-hotel logo-icon"></i>
+          <img src="logo.png" alt="AuraRent Logo" class="logo-icon-img">
           <h1>AURA<span>RENT</span></h1>
           <p>Enterprise Rental Management System</p>
         </div>
         <form id="login-form">
           <div class="form-group">
             <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
-            <input type="text" id="login-username" placeholder="Enter username (e.g., admin)" required autocomplete="username">
+            <input type="text" id="login-username" placeholder="Enter username (e.g., admin)" required
+              autocomplete="username">
           </div>
           <div class="form-group">
             <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
             <div class="password-input-wrapper">
-              <input type="password" id="login-password" placeholder="Enter password (e.g., admin123)" required autocomplete="current-password">
+              <input type="password" id="login-password" placeholder="Enter password (e.g., admin123)" required
+                autocomplete="current-password">
               <button type="button" id="toggle-password-btn" class="toggle-password-btn">
                 <i class="fa-regular fa-eye"></i>
               </button>
@@ -73,7 +80,8 @@
             <span class="demo-tag" onclick="quickFill('landlord', 'landlord123')">Landlord (landlord)</span>
             <span class="demo-tag" onclick="quickFill('accountant', 'accountant123')">Accountant (accountant)</span>
             <span class="demo-tag" onclick="quickFill('maintenance', 'maintenance123')">Maintenance (maintenance)</span>
-            <span class="demo-tag" onclick="quickFill('receptionist', 'receptionist123')">Reception (receptionist)</span>
+            <span class="demo-tag" onclick="quickFill('receptionist', 'receptionist123')">Reception
+              (receptionist)</span>
             <span class="demo-tag" onclick="quickFill('tenant1', 'tenant123')">Tenant (tenant1)</span>
           </div>
         </div>
@@ -86,8 +94,8 @@
     <div id="register-view" class="view login-view hidden">
       <div class="login-card">
         <div class="login-logo">
-          <i class="fa-solid fa-hotel logo-icon"></i>
-          <h1>AURA<span>RENT</span></h1>
+          <img src="logo.png" alt="AuraRent Logo" class="logo-icon-img">
+          <h1>G4D<span>RENT</span></h1>
           <p>Create Your AuraRent Account</p>
         </div>
         <form id="register-form">
@@ -145,25 +153,29 @@
       <!-- SIDEBAR -->
       <aside class="sidebar">
         <div class="sidebar-header">
-          <i class="fa-solid fa-hotel logo-icon"></i>
+          <img src="logo.png" alt="AuraRent Logo" class="logo-icon-img">
           <h2>AURA<span>RENT</span></h2>
         </div>
         <nav class="sidebar-nav">
           <ul>
-            <li data-target="dashboard" class="active"><a href="#"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li data-target="dashboard" class="active"><a href="#"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            </li>
             <li data-target="properties"><a href="#"><i class="fa-solid fa-building"></i> Properties</a></li>
             <li data-target="units"><a href="#"><i class="fa-solid fa-door-open"></i> Units</a></li>
             <li data-target="tenants"><a href="#"><i class="fa-solid fa-users"></i> Tenants</a></li>
             <li data-target="leases"><a href="#"><i class="fa-solid fa-file-contract"></i> Leases</a></li>
             <li data-target="invoices"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices</a></li>
             <li data-target="payments"><a href="#"><i class="fa-solid fa-receipt"></i> Payments</a></li>
-            <li data-target="maintenance"><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance</a></li>
+            <li data-target="maintenance"><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance</a>
+            </li>
             <li data-target="utilities"><a href="#"><i class="fa-solid fa-faucet-drip"></i> Utilities</a></li>
             <li data-target="expenses"><a href="#"><i class="fa-solid fa-wallet"></i> Expenses</a></li>
             <li data-target="visitors"><a href="#"><i class="fa-solid fa-id-badge"></i> Visitors</a></li>
-            <li data-target="audit-logs" class="role-only super-admin-only"><a href="#"><i class="fa-solid fa-history"></i> Audit Logs</a></li>
+            <li data-target="audit-logs" class="role-only super-admin-only"><a href="#"><i
+                  class="fa-solid fa-history"></i> Audit Logs</a></li>
             <li data-target="reports"><a href="#"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
-            <li data-target="payment-settings" class="role-only landlord-only manager-only"><a href="#"><i class="fa-solid fa-credit-card"></i> Payment Settings</a></li>
+            <li data-target="payment-settings" class="role-only landlord-only manager-only"><a href="#"><i
+                  class="fa-solid fa-credit-card"></i> Payment Settings</a></li>
           </ul>
         </nav>
         <div class="sidebar-footer">
@@ -318,17 +330,21 @@
           <div class="form-group col-6">
             <label for="prop-images-upload">Upload Pictures</label>
             <input type="file" id="prop-images-upload" accept="image/*" multiple>
-            <div id="prop-images-preview" class="media-preview-container" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"></div>
+            <div id="prop-images-preview" class="media-preview-container"
+              style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"></div>
           </div>
           <div class="form-group col-6">
             <label for="prop-videos-upload">Upload Videos</label>
             <input type="file" id="prop-videos-upload" accept="video/*" multiple>
-            <div id="prop-videos-preview" class="media-preview-container" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"></div>
+            <div id="prop-videos-preview" class="media-preview-container"
+              style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"></div>
           </div>
         </div>
         <div class="form-group" style="margin-top: 20px;">
-          <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px; font-size: 16px; font-family: 'Outfit', sans-serif;">
-            <i class="fa-solid fa-credit-card" style="margin-right: 8px; color: var(--primary);"></i>Payment Settings (Property Specific)
+          <h3
+            style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px; font-size: 16px; font-family: 'Outfit', sans-serif;">
+            <i class="fa-solid fa-credit-card" style="margin-right: 8px; color: var(--primary);"></i>Payment Settings
+            (Property Specific)
           </h3>
           <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">
             These credentials override default landlord payment settings. Leave blank to use landlord account defaults.
@@ -357,7 +373,8 @@
         <div class="form-row">
           <div class="form-group col-12">
             <label for="prop-gateway-type">Gateway Provider</label>
-            <select id="prop-gateway-type" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; outline: none;">
+            <select id="prop-gateway-type"
+              style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; outline: none;">
               <option value="stripe">Stripe</option>
               <option value="paystack">Paystack</option>
             </select>
@@ -414,15 +431,15 @@
         </div>
         <div class="form-row">
           <div class="form-group col-4">
-            <label for="unit-rent">Monthly Rent ($) *</label>
+            <label for="unit-rent">Monthly Rent (GH₵) *</label>
             <input type="number" id="unit-rent" required min="0" placeholder="1500">
           </div>
           <div class="form-group col-4">
-            <label for="unit-deposit">Security Deposit ($) *</label>
+            <label for="unit-deposit">Security Deposit (GH₵) *</label>
             <input type="number" id="unit-deposit" required min="0" placeholder="1500">
           </div>
           <div class="form-group col-4">
-            <label for="unit-service">Service Charge ($)</label>
+            <label for="unit-service">Service Charge (GH₵)</label>
             <input type="number" id="unit-service" min="0" value="0">
           </div>
         </div>
@@ -450,7 +467,8 @@
       </div>
       <form id="tenant-form">
         <div class="demo-alert">
-          <i class="fa-solid fa-circle-info"></i> Registering a tenant automatically provisions a portal login user account.
+          <i class="fa-solid fa-circle-info"></i> Registering a tenant automatically provisions a portal login user
+          account.
         </div>
         <div class="form-row">
           <div class="form-group col-6">
@@ -515,7 +533,7 @@
           <div class="nested-fields">
             <input type="text" id="tenant-guarantor-name" placeholder="Name">
             <input type="text" id="tenant-guarantor-phone" placeholder="Phone">
-            <input type="number" id="tenant-guarantor-income" placeholder="Annual Income ($)">
+            <input type="number" id="tenant-guarantor-income" placeholder="Annual Income (GH₵)">
           </div>
         </div>
         <div class="modal-actions">
@@ -554,17 +572,18 @@
         </div>
         <div class="form-row">
           <div class="form-group col-6">
-            <label for="lease-rent">Rent Amount ($) *</label>
+            <label for="lease-rent">Rent Amount (GH₵) *</label>
             <input type="number" id="lease-rent" required placeholder="Inherited from unit settings">
           </div>
           <div class="form-group col-6">
-            <label for="lease-deposit">Deposit Amount ($) *</label>
+            <label for="lease-deposit">Deposit Amount (GH₵) *</label>
             <input type="number" id="lease-deposit" required placeholder="Inherited from unit settings">
           </div>
         </div>
         <div class="form-group">
           <label for="lease-terms">Agreement Terms & Conditions</label>
-          <textarea id="lease-terms" rows="4" placeholder="Standard lease terms. Include policies, maintenance allocations, rules..."></textarea>
+          <textarea id="lease-terms" rows="4"
+            placeholder="Standard lease terms. Include policies, maintenance allocations, rules..."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
@@ -581,12 +600,14 @@
       </div>
       <form id="signature-form">
         <input type="hidden" id="sign-lease-id">
-        <p class="signature-instruction">Use your mouse, trackpad, or touch screen to draw your official digital signature below.</p>
+        <p class="signature-instruction">Use your mouse, trackpad, or touch screen to draw your official digital
+          signature below.</p>
         <div class="signature-canvas-wrapper">
           <canvas id="signature-pad" width="550" height="200"></canvas>
         </div>
         <div class="signature-controls">
-          <button type="button" id="clear-sig-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eraser"></i> Clear</button>
+          <button type="button" id="clear-sig-btn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eraser"></i>
+            Clear</button>
           <span class="warning-text"><i class="fa-solid fa-circle-exclamation"></i> Drawing is legally binding.</span>
         </div>
         <div class="modal-actions">
@@ -608,11 +629,11 @@
           <label>Invoice Billing Details</label>
           <div class="invoice-summary-box" id="pay-invoice-details">
             <span id="pay-details-number">INV-XXXX</span>
-            <span id="pay-details-amount">$0.00 Due</span>
+            <span id="pay-details-amount">GH₵0.00 Due</span>
           </div>
         </div>
         <div class="form-group">
-          <label for="pay-amount">Payment Amount ($) *</label>
+          <label for="pay-amount">Payment Amount (GH₵) *</label>
           <input type="number" step="0.01" id="pay-amount" required placeholder="0.00">
         </div>
         <div class="form-group">
@@ -626,8 +647,10 @@
           </select>
         </div>
         <!-- Dynamic Landlord Payment Info Container -->
-        <div id="landlord-payment-info" class="landlord-payment-info hidden" style="margin-top: 15px; margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: 8px;">
-          <h4 style="margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--primary);"><i class="fa-solid fa-circle-info"></i> Landlord Payment Details</h4>
+        <div id="landlord-payment-info" class="landlord-payment-info hidden"
+          style="margin-top: 15px; margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: 8px;">
+          <h4 style="margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--primary);"><i
+              class="fa-solid fa-circle-info"></i> Landlord Payment Details</h4>
           <p id="landlord-payment-details-text" style="font-size: 13px; line-height: 1.5; color: var(--text-main);"></p>
         </div>
         <div class="form-group">
@@ -651,9 +674,11 @@
         <input type="hidden" id="apply-unit-id">
         <div class="form-group">
           <label>Unit Details</label>
-          <div class="invoice-summary-box" style="padding:15px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+          <div class="invoice-summary-box"
+            style="padding:15px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
             <span id="apply-details-unit" style="font-weight:600;">Unit XXX</span>
-            <span id="apply-details-pricing" style="font-weight:600; color:var(--primary); font-size:14px;">$0.00 / mo</span>
+            <span id="apply-details-pricing" style="font-weight:600; color:var(--primary); font-size:14px;">GH₵0.00 /
+              mo</span>
           </div>
         </div>
         <div class="form-group">
@@ -666,7 +691,8 @@
         </div>
         <div class="form-group">
           <label for="apply-terms">Additional Requests or Terms</label>
-          <textarea id="apply-terms" placeholder="e.g. parking request, pet description" style="width:100%; min-height:80px; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:rgba(0,0,0,0.1); color:#fff; outline:none; resize:vertical; font-family:inherit;"></textarea>
+          <textarea id="apply-terms" placeholder="e.g. parking request, pet description"
+            style="width:100%; min-height:80px; padding:10px; border-radius:6px; border:1px solid var(--border-color); background:rgba(0,0,0,0.1); color:#fff; outline:none; resize:vertical; font-family:inherit;"></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
@@ -712,7 +738,7 @@
             <input type="number" step="any" id="util-curr" required value="0">
           </div>
           <div class="form-group col-4">
-            <label for="util-rate">Unit Rate ($) *</label>
+            <label for="util-rate">Unit Rate (GH₵) *</label>
             <input type="number" step="any" id="util-rate" required placeholder="0.20">
           </div>
         </div>
@@ -755,7 +781,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="exp-amount">Amount Expense ($) *</label>
+          <label for="exp-amount">Amount Expense (GH₵) *</label>
           <input type="number" step="0.01" id="exp-amount" required placeholder="0.00">
         </div>
         <div class="form-group">
@@ -808,7 +834,8 @@
       <div class="modal-header no-print">
         <h2>Document Preview</h2>
         <div>
-          <button id="modal-print-btn" class="btn btn-primary btn-sm"><i class="fa-solid fa-print"></i> Print PDF</button>
+          <button id="modal-print-btn" class="btn btn-primary btn-sm"><i class="fa-solid fa-print"></i> Print
+            PDF</button>
           <button class="close-modal-btn">&times;</button>
         </div>
       </div>
@@ -823,19 +850,22 @@
         <h2>Media Preview</h2>
         <button class="close-modal-btn" onclick="closeMediaPreview()">&times;</button>
       </div>
-      <div class="modal-body" style="display:flex; justify-content:center; align-items:center; min-height:300px; background:#000; border-radius:4px; padding:10px; overflow:hidden;">
+      <div class="modal-body"
+        style="display:flex; justify-content:center; align-items:center; min-height:300px; background:#000; border-radius:4px; padding:10px; overflow:hidden;">
         <div id="media-preview-content" style="width:100%; display:flex; justify-content:center;"></div>
       </div>
     </div>
   </div>
 
   <!-- Leaflet Map Script -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <!-- Chart.js for Dash Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Core JavaScript SPA application -->
   <script src="app.js"></script>
 </body>
+
 </html>

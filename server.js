@@ -446,7 +446,7 @@ app.get('/api/dashboard/stats', authenticateToken, (req, res) => {
               const balance = item.total_due - item.paid_amount;
               stats.notifications.push({
                 type: 'Unpaid Rent',
-                message: `Invoice ${item.invoice_number} has an outstanding balance of $${balance.toFixed(2)}. Due: ${item.due_date}`,
+                message: `Invoice ${item.invoice_number} has an outstanding balance of GH₵${balance.toFixed(2)}. Due: ${item.due_date}`,
                 date: item.due_date
               });
             });
@@ -560,7 +560,7 @@ app.get('/api/dashboard/stats', authenticateToken, (req, res) => {
                   overdue.forEach(item => {
                     stats.notifications.push({
                       type: 'Overdue Rent',
-                      message: `Rent invoice ${item.invoice_number} for ${item.tenant_name} is overdue. Due: ${item.due_date}. Balance: $${item.total_due - item.paid_amount}`,
+                      message: `Rent invoice ${item.invoice_number} for ${item.tenant_name} is overdue. Due: ${item.due_date}. Balance: GH₵${item.total_due - item.paid_amount}`,
                       date: item.due_date
                     });
                   });
@@ -1228,7 +1228,7 @@ app.put('/api/invoices/:id/late-fees', authenticateToken, requireRole(['Super Ad
       [penalties, newTotal, id],
       function(err) {
         if (err) return res.status(500).json({ error: 'Database error' });
-        logAudit(req.user.id, 'APPLY_PENALTY', `Applied penalty to Invoice ID: ${id} ($${penalties})`, req);
+        logAudit(req.user.id, 'APPLY_PENALTY', `Applied penalty to Invoice ID: ${id} (GH₵${penalties})`, req);
         res.json({ message: 'Late fees/penalties updated successfully' });
       }
     );
@@ -1316,7 +1316,7 @@ app.post('/api/payments', authenticateToken, (req, res) => {
           [newPaid, status, invoice_id]
         );
 
-        logAudit(req.user.id, 'RECORD_PAYMENT', `Recorded payment $${payAmount} for Invoice ID: ${invoice_id}`, req);
+        logAudit(req.user.id, 'RECORD_PAYMENT', `Recorded payment GH₵${payAmount} for Invoice ID: ${invoice_id}`, req);
         res.status(201).json({ receipt_number: receiptNumber, message: 'Payment recorded successfully' });
       });
     }
@@ -1456,10 +1456,10 @@ app.post('/api/payments/checkout-session', authenticateToken, (req, res) => {
             payment_method_types: ['card'],
             line_items: [{
               price_data: {
-                currency: 'usd',
+                currency: 'ghs',
                 product_data: {
                   name: `Rent Payment - Invoice ${invoice.invoice_number}`,
-                  description: `Outstanding balance: $${outstanding.toFixed(2)}`,
+                  description: `Outstanding balance: GH₵${outstanding.toFixed(2)}`,
                 },
                 unit_amount: Math.round(payAmount * 100), // amount in cents
               },
@@ -1570,7 +1570,7 @@ app.post('/api/payments/verify-checkout-session', authenticateToken, (req, res) 
             [newPaid, status, inv_id]
           );
 
-          logAudit(req.user.id, 'RECORD_PAYMENT', `Online Payment $${payAmount} processed for Invoice ID: ${inv_id}`, req);
+          logAudit(req.user.id, 'RECORD_PAYMENT', `Online Payment GH₵${payAmount} processed for Invoice ID: ${inv_id}`, req);
           res.status(201).json({ receipt_number: receiptNumber, message: 'Payment recorded successfully' });
         });
       });

@@ -210,7 +210,8 @@ async function fetchApi(endpoint, options = {}) {
 
 // Format numbers as currency
 function formatCurrency(val) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+  const formatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+  return formatted.replace('$', 'GH₵');
 }
 
 // Quick Fill Helper for Demo logins
@@ -802,7 +803,7 @@ async function renderDashboard(container) {
     data: {
       labels: revMonths.length ? revMonths : ['No Data'],
       datasets: [{
-        label: 'Revenue ($)',
+        label: 'Revenue (GH₵)',
         data: revAmounts.length ? revAmounts : [0],
         backgroundColor: 'hsl(255, 65%, 60%)',
         borderRadius: 6
@@ -1719,7 +1720,7 @@ window.viewInvoiceReceipt = async function(id) {
 };
 
 window.chargePenalties = async function(id) {
-  const amount = prompt("Enter late fee penalty amount to apply ($):");
+  const amount = prompt("Enter late fee penalty amount to apply (GH₵):");
   if (amount !== null && !isNaN(amount)) {
     showLoader();
     try {
@@ -2029,7 +2030,7 @@ async function renderExpenses(container) {
             <th>Description / Memo</th>
             <th>Log Agent</th>
             <th>Receipt File</th>
-            <th>Value ($)</th>
+            <th>Value (GH₵)</th>
           </tr>
         </thead>
         <tbody>
@@ -3116,11 +3117,11 @@ async function openInvoiceModal() {
       </div>
       <div class="form-row">
         <div class="form-group col-6">
-          <label for="inv-rent">Rent Amount ($) *</label>
+          <label for="inv-rent">Rent Amount (GH₵) *</label>
           <input type="number" id="inv-rent" required>
         </div>
         <div class="form-group col-6">
-          <label for="inv-utils">Utility Charges ($)</label>
+          <label for="inv-utils">Utility Charges (GH₵)</label>
           <input type="number" id="inv-utils" value="0">
         </div>
       </div>

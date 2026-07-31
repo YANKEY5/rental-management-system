@@ -473,7 +473,7 @@ async function runTests() {
       if (paystackCheckoutRes.status === 200) {
         const data = await paystackCheckoutRes.json();
         checkoutUrl = data.url;
-        if (checkoutUrl && checkoutUrl.includes('mock-paystack-checkout.com')) {
+        if (checkoutUrl && checkoutUrl.includes('gateway=paystack')) {
           console.log('✔ Test 10c Passed: Successfully initialized Paystack mock checkout session.');
         } else {
           console.log('❌ Test 10 Failed: Checkout URL was not a mock Paystack URL.', data);

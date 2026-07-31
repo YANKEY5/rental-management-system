@@ -234,7 +234,7 @@
         </div>
         <div class="receipt-row">
           <span class="receipt-label">Amount Paid</span>
-          <span class="receipt-value" id="res-amount">$0.00</span>
+          <span class="receipt-value" id="res-amount">GH₵0.00</span>
         </div>
       </div>
 
@@ -290,7 +290,7 @@
 
         // Retrieve Invoice Details to show on Success screen
         let invoiceNumber = `ID: ${invoiceId}`;
-        let paidAmount = '$0.00';
+        let paidAmount = 'GH₵0.00';
         
         try {
           const invRes = await fetch(`/api/invoices/${invoiceId}`, {
@@ -299,7 +299,8 @@
           if (invRes.ok) {
             const inv = await invRes.json();
             invoiceNumber = inv.invoice_number;
-            paidAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inv.total_due || 0);
+            const formatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inv.total_due || 0);
+            paidAmount = formatted.replace('$', 'GH₵');
           }
         } catch (e) {
           console.warn('Could not fetch additional invoice details', e);
