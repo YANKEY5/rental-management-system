@@ -33,36 +33,71 @@ if (connectionString) {
   pool = new Pool(config);
 } else {
   // Fallback to SQLite locally, using variable key to prevent Vercel static tracing
-  const sqliteModuleName = 'sqlite3';
-  const sqlite3 = require(sqliteModuleName).verbose();
-  const sqliteDb = new sqlite3.Database(path.join(__dirname, 'rental_system.db'));
+  let sqlite3;
+  let sqliteDb;
+  let sqliteError;
 
-  db = {
-    get(sql, params, callback) {
-      if (typeof params === 'function') {
-        callback = params;
-        params = [];
+  try {
+    const sqliteModuleName = 'sqlite3';
+    sqlite3 = require(sqliteModuleName).verbose();
+    sqliteDb = new sqlite3.Database(path.join(__dirname, 'rental_system.db'));
+  } catch (e) {
+    sqliteError = e;
+  }
+
+  if (sqliteDb) {
+    db = {
+      get(sql, params, callback) {
+        if (typeof params === 'function') {
+          callback = params;
+          params = [];
+        }
+        sqliteDb.get(sql, params, callback);
+      },
+      all(sql, params, callback) {
+        if (typeof params === 'function') {
+          callback = params;
+          params = [];
+        }
+        sqliteDb.all(sql, params, callback);
+      },
+      run(sql, params, callback) {
+        if (typeof params === 'function') {
+          callback = params;
+          params = [];
+        }
+        sqliteDb.run(sql, params, callback);
+      },
+      serialize(callback) {
+        sqliteDb.serialize(callback);
       }
-      sqliteDb.get(sql, params, callback);
-    },
-    all(sql, params, callback) {
-      if (typeof params === 'function') {
-        callback = params;
-        params = [];
+    };
+  } else {
+    // Dummy db to prevent crash on startup, but fail on query execution
+    db = {
+      get(sql, params, callback) {
+        const cb = typeof params === 'function' ? params : callback;
+        if (cb) {
+          cb(new Error("Database connection not configured. Please set DATABASE_URL or DATABASE_POSTGRES_URL in environment variables. SQLite is not available: " + (sqliteError ? sqliteError.message : "unknown")));
+        }
+      },
+      all(sql, params, callback) {
+        const cb = typeof params === 'function' ? params : callback;
+        if (cb) {
+          cb(new Error("Database connection not configured. Please set DATABASE_URL or DATABASE_POSTGRES_URL in environment variables. SQLite is not available: " + (sqliteError ? sqliteError.message : "unknown")));
+        }
+      },
+      run(sql, params, callback) {
+        const cb = typeof params === 'function' ? params : callback;
+        if (cb) {
+          cb(new Error("Database connection not configured. Please set DATABASE_URL or DATABASE_POSTGRES_URL in environment variables. SQLite is not available: " + (sqliteError ? sqliteError.message : "unknown")));
+        }
+      },
+      serialize(callback) {
+        if (callback) callback();
       }
-      sqliteDb.all(sql, params, callback);
-    },
-    run(sql, params, callback) {
-      if (typeof params === 'function') {
-        callback = params;
-        params = [];
-      }
-      sqliteDb.run(sql, params, callback);
-    },
-    serialize(callback) {
-      sqliteDb.serialize(callback);
-    }
-  };
+    };
+  }
 }
 
 function convertSql(sql) {
