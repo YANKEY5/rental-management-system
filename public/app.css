@@ -1,5 +1,5 @@
 /* ==========================================================================
-   AuraRent Design System & Styling (Light & Dark Theme Variables)
+   G4DRent Design System & Styling (Light & Dark Theme Variables)
    ========================================================================== */
 
 :root {
@@ -1597,6 +1597,11 @@ body.dark-theme .glass-panel {
     gap: 15px !important;
     margin-bottom: 20px;
   }
+  .doc-parties {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+    margin-bottom: 25px !important;
+  }
 }
 
 @media (max-width: 576px) {
@@ -1629,5 +1634,21 @@ body.dark-theme .glass-panel {
   }
   .quick-actions-grid {
     grid-template-columns: 1fr !important;
+  }
+  .login-card {
+    padding: 24px !important;
+    max-width: 100% !important;
+  }
+  .modal-actions {
+    flex-direction: column-reverse !important;
+    padding: 16px !important;
+    gap: 8px !important;
+  }
+  .modal-actions .btn {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .modal-card form {
+    padding: 16px !important;
   }
 }

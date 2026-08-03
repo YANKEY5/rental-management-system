@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Status - AuraRent</title>
+  <title>Payment Status - G4DRent</title>
   
   <!-- Fonts: Google Fonts Outfit & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -201,7 +201,7 @@
 
   <div class="success-container">
     <div class="logo-container">
-      <i class="fa-solid fa-house-chimney-user"></i> AuraRent
+      <i class="fa-solid fa-house-chimney-user"></i> G4DRent
     </div>
 
     <!-- Processing State -->
@@ -266,9 +266,9 @@
       }
 
       // Retrieve JWT token
-      const token = localStorage.getItem('aura_token');
+      const token = localStorage.getItem('g4d_token');
       if (!token) {
-        showError('Authentication token missing. Please sign back in to AuraRent.');
+        showError('Authentication token missing. Please sign back in to G4DRent.');
         return;
       }
 

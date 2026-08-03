@@ -1,11 +1,11 @@
 // ==========================================================================
-// AuraRent - Client Side SPA JavaScript Controller
+// G4DRent - Client Side SPA JavaScript Controller
 // ==========================================================================
 
 // Global Application State
 const state = {
-  token: localStorage.getItem('aura_token') || null,
-  user: JSON.parse(localStorage.getItem('aura_user')) || null,
+  token: localStorage.getItem('g4d_token') || null,
+  user: JSON.parse(localStorage.getItem('g4d_user')) || null,
   activeView: 'dashboard',
   charts: {},
   map: null,
@@ -240,8 +240,8 @@ function initAuth() {
       
       state.token = data.token;
       state.user = data.user;
-      localStorage.setItem('aura_token', data.token);
-      localStorage.setItem('aura_user', JSON.stringify(data.user));
+      localStorage.setItem('g4d_token', data.token);
+      localStorage.setItem('g4d_user', JSON.stringify(data.user));
       
       showToast(`Welcome back, ${state.user.full_name}!`);
       checkSession();
@@ -317,8 +317,8 @@ function initAuth() {
 
       state.token = data.token;
       state.user = data.user;
-      localStorage.setItem('aura_token', data.token);
-      localStorage.setItem('aura_user', JSON.stringify(data.user));
+      localStorage.setItem('g4d_token', data.token);
+      localStorage.setItem('g4d_user', JSON.stringify(data.user));
 
       showToast(`Registration successful! Welcome, ${state.user.full_name}.`);
       checkSession();
@@ -358,8 +358,8 @@ function initAuth() {
         
         state.token = data.token;
         state.user = data.user;
-        localStorage.setItem('aura_token', data.token);
-        localStorage.setItem('aura_user', JSON.stringify(data.user));
+        localStorage.setItem('g4d_token', data.token);
+        localStorage.setItem('g4d_user', JSON.stringify(data.user));
         
         showToast(`Authenticated via Google as ${state.user.full_name}`);
         checkSession();
@@ -383,8 +383,8 @@ function logout() {
   }
   state.token = null;
   state.user = null;
-  localStorage.removeItem('aura_token');
-  localStorage.removeItem('aura_user');
+  localStorage.removeItem('g4d_token');
+  localStorage.removeItem('g4d_user');
   checkSession();
   showToast('Logged out successfully.', 'info');
 }
@@ -507,6 +507,12 @@ function initRouter() {
 function navigateTo(view) {
   state.activeView = view;
   
+  // Auto-close sidebar on mobile/tablet navigate
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar && sidebar.classList.contains('show')) {
+    sidebar.classList.remove('show');
+  }
+  
   // Format header title
   const titleMap = {
     'dashboard': 'Dashboard Overview',
@@ -524,7 +530,7 @@ function navigateTo(view) {
     'reports': 'Financial & Analytics Reporting',
     'payment-settings': 'Payment Configurations'
   };
-  document.getElementById('view-title').innerText = titleMap[view] || 'AuraRent';
+  document.getElementById('view-title').innerText = titleMap[view] || 'G4DRent';
 
   // Render view
   const contentPane = document.getElementById('main-content');
@@ -1494,7 +1500,7 @@ window.viewLeaseAgreement = async function(id) {
     document.getElementById('print-area').innerHTML = `
       <div class="document-header">
         <div class="doc-company">
-          <h2>AuraRent Property Management</h2>
+          <h2>G4DRent Property Management</h2>
           <p>100 Executive Boulevard, Suite 500</p>
           <p>Austin, Texas, USA</p>
         </div>
@@ -1508,7 +1514,7 @@ window.viewLeaseAgreement = async function(id) {
       <div class="doc-parties">
         <div class="doc-party">
           <h3>Landlord / Authority</h3>
-          <p><strong>AuraRent System Authority</strong></p>
+          <p><strong>G4DRent System Authority</strong></p>
           <p>Representing: ${l.property_name}</p>
           <p>Location: ${l.property_address}, ${l.property_city}</p>
         </div>
@@ -1552,7 +1558,7 @@ window.viewLeaseAgreement = async function(id) {
       <div class="doc-signatures">
         <div class="signature-box">
           <p style="margin-bottom:40px;"><strong>Landlord Signature</strong></p>
-          <p>AuraRent Management Team</p>
+          <p>G4DRent Management Team</p>
         </div>
         <div class="signature-box">
           <p style="margin-bottom:10px;"><strong>Tenant Digital Signature</strong></p>
@@ -1645,7 +1651,7 @@ window.viewInvoiceReceipt = async function(id) {
     document.getElementById('print-area').innerHTML = `
       <div class="document-header">
         <div class="doc-company">
-          <h2>AuraRent Properties Ltd</h2>
+          <h2>G4DRent Properties Ltd</h2>
           <p>${inv.property_address}</p>
           <p>${inv.property_city}, ${inv.property_state}</p>
         </div>
@@ -1708,7 +1714,7 @@ window.viewInvoiceReceipt = async function(id) {
       </table>
 
       <div class="doc-terms" style="margin-top:40px; border-top:1px dashed #ccc; padding-top:20px;">
-        <p class="text-center" style="font-size:12px; color:var(--text-muted);">Thank you for choosing AuraRent. Please settle outstanding balances before the due date to avoid automated late fee penalties.</p>
+        <p class="text-center" style="font-size:12px; color:var(--text-muted);">Thank you for choosing G4DRent. Please settle outstanding balances before the due date to avoid automated late fee penalties.</p>
       </div>
     `;
 
@@ -3188,19 +3194,19 @@ function initTheme() {
   const body = document.body;
 
   // Load theme preference
-  const currentTheme = localStorage.getItem('aura_theme') || 'light-theme';
+  const currentTheme = localStorage.getItem('g4d_theme') || 'light-theme';
   body.className = currentTheme;
   updateThemeIcon(currentTheme);
 
   themeToggle.addEventListener('click', () => {
     if (body.classList.contains('light-theme')) {
       body.classList.replace('light-theme', 'dark-theme');
-      localStorage.setItem('aura_theme', 'dark-theme');
+      localStorage.setItem('g4d_theme', 'dark-theme');
       updateThemeIcon('dark-theme');
       showToast('Theme set to dark mode', 'info');
     } else {
       body.classList.replace('dark-theme', 'light-theme');
-      localStorage.setItem('aura_theme', 'light-theme');
+      localStorage.setItem('g4d_theme', 'light-theme');
       updateThemeIcon('light-theme');
       showToast('Theme set to light mode', 'info');
     }
