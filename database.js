@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const { parse } = require('pg-connection-string');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 
@@ -10,19 +11,7 @@ let isPostgres = false;
 
 if (connectionString) {
   isPostgres = true;
-  let config = {};
-  try {
-    const dbUrl = new URL(connectionString);
-    config = {
-      user: decodeURIComponent(dbUrl.username),
-      password: decodeURIComponent(dbUrl.password),
-      host: dbUrl.hostname,
-      port: dbUrl.port || 5432,
-      database: decodeURIComponent(dbUrl.pathname.slice(1))
-    };
-  } catch (e) {
-    config = { connectionString };
-  }
+  const config = parse(connectionString);
 
   if (connectionString && !connectionString.includes('localhost') && !connectionString.includes('127.0.0.1')) {
     config.ssl = { rejectUnauthorized: false };
@@ -31,6 +20,9 @@ if (connectionString) {
   }
 
   pool = new Pool(config);
+  pool.on('error', (err) => {
+    console.error('Unexpected error on pg pool idle client:', err);
+  });
 } else {
   // Fallback to SQLite locally, using variable key to prevent Vercel static tracing
   let sqlite3;
@@ -184,6 +176,19 @@ async function initDatabase() {
   }
   const client = await pool.connect();
   try {
+    // Check if database is already initialized to skip roundtrips
+    const tableCheck = await client.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
+      );
+    `);
+    if (tableCheck.rows[0].exists) {
+      console.log("Database already initialized. Skipping schema creation.");
+      return;
+    }
+
     // 0. Create strftime overloaded functions to support existing queries
     await client.query(`
       CREATE OR REPLACE FUNCTION strftime(format text, val text)
